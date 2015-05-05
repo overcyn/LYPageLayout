@@ -22,5 +22,6 @@
 // This is the interface that LYPageViewController exposes to the LYPages
 @protocol LYPageDelegate <NSObject>
 - (void)pageDidUpdate:(id<LYPage>)page;
+- (void)page:(id<LYPage>)page didUpdateSectionsAtIndexes:(NSIndexSet *)indexes;
 - (UIViewController *)parentViewControllerForPage:(id<LYPage>)page;
 @end

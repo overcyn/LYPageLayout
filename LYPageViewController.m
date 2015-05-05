@@ -9,7 +9,7 @@
 
 @implementation LYPageViewController {
     NSArray *_sections;
-    NSArray *_sectionControllers;
+    NSMutableArray *_sectionControllers;
     UICollectionView *_collectionView;
     id<LYPage> _page;
 }
@@ -17,7 +17,7 @@
 - (id)initWithNibName:(NSString *)name bundle:(NSBundle *)bundle {
     if ((self = [super initWithNibName:name bundle:bundle])) {
         _sections = @[];
-        _sectionControllers = @[];
+        _sectionControllers = [NSMutableArray array];
     }
     return self;
 }
@@ -184,6 +184,10 @@
     [self _reloadSections];
 }
 
+- (void)page:(id<LYPage>)page didUpdateSectionsAtIndexes:(NSIndexSet *)indexes {
+    [self _reloadSectionsAtIndexes:indexes];
+}
+
 #pragma mark - LYSectionDelegate
 
 - (UIViewController *)parentViewControllerForSection:(id<LYSectionController>)section {
@@ -242,6 +246,19 @@
         [controller setDelegate:self];
         [controller setup];
     }
+    [_collectionView reloadData];
+}
+
+- (void)_reloadSectionsAtIndexes:(NSIndexSet *)indexes {
+    [self view];
+    
+    [indexes enumerateIndexesUsingBlock:^(NSUInteger i, BOOL *stop){
+        id<LYSection> section = _sections[i];
+        id<LYSectionController> controller = [[[[section class] controllerClass] alloc] initWithSection:section];
+        [_sectionControllers replaceObjectAtIndex:i withObject:controller];
+        [controller setDelegate:self];
+        [controller setup];
+    }];
     [_collectionView reloadData];
 }
 
